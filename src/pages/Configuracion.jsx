@@ -15,6 +15,7 @@ import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt
 
 export default function Configuracion({ onActualizar }) {
   const navigate = useNavigate();
+  const backend = import.meta.env.VITE_BACKEND_URL;
   const usuarioStorage = JSON.parse(localStorage.getItem("usuario")) || {};
 
   const [usuario, setUsuario] = useState({
@@ -31,12 +32,10 @@ export default function Configuracion({ onActualizar }) {
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
 
-  // 👉 Estados y refs para el emoji picker de descripción
   const [mostrarEmojiPicker, setMostrarEmojiPicker] = useState(false);
   const emojiRef = useRef(null);
   const pickerRef = useRef(null);
 
-  // 👉 Cerrar picker al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -51,7 +50,6 @@ export default function Configuracion({ onActualizar }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // 📦 Dropzone
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 0) {
       const archivo = acceptedFiles[0];
@@ -64,7 +62,6 @@ export default function Configuracion({ onActualizar }) {
   }, []);
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
-  // 💾 Guardar cambios
   const handleGuardar = async () => {
     setCargando(true);
     setMensaje("");
@@ -85,7 +82,7 @@ export default function Configuracion({ onActualizar }) {
         formData.append("archivo", usuario.avatar);
 
         const resAvatar = await fetch(
-          `https://backend-red-social-blah.fly.dev/usuarios/${usuarioStorage.id}/avatar`,
+          `${backend}/usuarios/${usuarioStorage.id}/avatar`,
           {
             method: "POST",
             body: formData,
@@ -103,13 +100,13 @@ export default function Configuracion({ onActualizar }) {
         nickname: usuario.nickname,
         telefono: usuario.telefono,
         email: usuario.email,
-        descripcion: usuario.descripcion, // ✅ Mantiene los emojis
+        descripcion: usuario.descripcion,
         avatarUrl: avatarUrlFinal,
         password: usuarioStorage.password || "temporal",
       };
 
       const resUser = await fetch(
-        `https://backend-red-social-blah.fly.dev/usuarios/${usuarioStorage.id}`,
+        `${backend}/usuarios/${usuarioStorage.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -138,7 +135,6 @@ export default function Configuracion({ onActualizar }) {
     }
   };
 
-  // 🗑️ Eliminar cuenta
   const handleEliminarCuenta = async () => {
     const confirmar = window.confirm(
       "¿Deseas eliminar tu cuenta? Esta acción no se puede deshacer."
@@ -146,7 +142,7 @@ export default function Configuracion({ onActualizar }) {
     if (!confirmar) return;
 
     try {
-      await fetch(`https://backend-red-social-blah.fly.dev/usuarios/${usuarioStorage.id}`, {
+      await fetch(`${backend}/usuarios/${usuarioStorage.id}`, {
         method: "DELETE",
       });
 
@@ -174,7 +170,6 @@ export default function Configuracion({ onActualizar }) {
           mt: 4,
         }}
       >
-        {/* 📸 Avatar */}
         <Box
           {...getRootProps()}
           sx={{
@@ -202,7 +197,7 @@ export default function Configuracion({ onActualizar }) {
             <img
               src={
                 usuario.avatarUrl.startsWith("/uploads/")
-                  ? `https://backend-red-social-blah.fly.dev${usuario.avatarUrl}`
+                  ? `${backend}${usuario.avatarUrl}`
                   : usuario.avatarUrl
               }
               alt="Avatar actual"
@@ -215,7 +210,6 @@ export default function Configuracion({ onActualizar }) {
           )}
         </Box>
 
-        {/* 📝 Formulario */}
         <Box sx={{ flex: 2 }}>
           <TextField
             label="Nombre"
@@ -253,7 +247,6 @@ export default function Configuracion({ onActualizar }) {
             InputProps={{ readOnly: true }}
           />
 
-          {/* 🆕 Campo de descripción con emoji picker */}
           <Box sx={{ position: "relative", mb: 2 }}>
             <TextField
               label="Sobre mí"
@@ -299,7 +292,6 @@ export default function Configuracion({ onActualizar }) {
             )}
           </Box>
 
-          {/* 💾 Botón guardar */}
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
             <Button
               variant="contained"
@@ -327,7 +319,6 @@ export default function Configuracion({ onActualizar }) {
         </Box>
       </Box>
 
-      {/* 🗑️ Eliminar cuenta */}
       <Box sx={{ mt: 6 }}>
         <Box sx={{ borderTop: "2px solid #ccc", mt: 4, mb: 3 }} />
         <Box sx={{ display: "flex", justifyContent: "center" }}>

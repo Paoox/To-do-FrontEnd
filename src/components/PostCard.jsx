@@ -44,7 +44,6 @@ export default function PostCard({
 }) {
   const navigate = useNavigate();
 
-  // 🧠 Estados locales
   const [modoEdicion, setModoEdicion] = useState(false);
   const [contenidoEditado, setContenidoEditado] = useState(contenido);
   const [nuevaImagen, setNuevaImagen] = useState(null);
@@ -54,11 +53,9 @@ export default function PostCard({
   const emojiRef = useRef(null);
   const pickerRef = useRef(null);
 
-  // ✅ Usuario autenticado (para ocultar botones si no es el autor)
   const usuarioAutenticado = JSON.parse(localStorage.getItem("usuario"));
   const esPropietario = usuarioAutenticado?.id === usuarioId;
 
-  // 🔒 Cerrar emoji picker al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -74,7 +71,7 @@ export default function PostCard({
   }, []);
 
   const avatarCompleto = avatarUrl?.startsWith("/uploads/")
-    ? `https://backend-red-social-blah.fly.dev${avatarUrl}`
+    ? `${import.meta.env.VITE_BACKEND_URL}${avatarUrl}`
     : avatarUrl;
 
   const fechaFormateada = new Date(fecha).toLocaleDateString("es-MX", {
@@ -83,14 +80,11 @@ export default function PostCard({
     day: "numeric",
   });
 
-  // ❤️ Like
   const handleLike = async () => {
     try {
       const response = await fetch(
-        `https://backend-red-social-blah.fly.dev/publicaciones/${id}/like`,
-        {
-          method: "PUT",
-        }
+        `${import.meta.env.VITE_BACKEND_URL}/publicaciones/${id}/like`,
+        { method: "PUT" }
       );
       if (response.ok) {
         const data = await response.json();
@@ -103,14 +97,11 @@ export default function PostCard({
     }
   };
 
-  // 😊 Reacción
   const handleReact = async () => {
     try {
       const response = await fetch(
-        `https://backend-red-social-blah.fly.dev/publicaciones/${id}/reaccion`,
-        {
-          method: "PUT",
-        }
+        `${import.meta.env.VITE_BACKEND_URL}/publicaciones/${id}/reaccion`,
+        { method: "PUT" }
       );
       if (response.ok) {
         const data = await response.json();
@@ -123,24 +114,16 @@ export default function PostCard({
     }
   };
 
-  // 💾 Guardar edición
   const handleGuardarCambios = async () => {
     try {
       const formData = new FormData();
       formData.append("contenido", contenidoEditado);
-
-      if (nuevaImagen) {
-        formData.append("imagen", nuevaImagen);
-      }
-
+      if (nuevaImagen) formData.append("imagen", nuevaImagen);
       formData.append("eliminarImagen", (!mostrarImagenActual).toString());
 
       const response = await fetch(
-        `https://backend-red-social-blah.fly.dev/publicaciones/${id}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
+        `${import.meta.env.VITE_BACKEND_URL}/publicaciones/${id}`,
+        { method: "PUT", body: formData }
       );
 
       if (response.ok) {
@@ -156,26 +139,12 @@ export default function PostCard({
     }
   };
 
-  // 👉 Ir al perfil del autor
   const handleAvatarClick = () => {
-    if (usuarioId) {
-      navigate(`/perfil/${usuarioId}`);
-    }
+    if (usuarioId) navigate(`/perfil/${usuarioId}`);
   };
 
   return (
-    <Card
-      sx={{
-        width: "100%",
-        margin: "auto",
-        mb: 3,
-        borderRadius: 3,
-        boxShadow: 3,
-        border: "1px solid #1976d2",
-        backgroundColor: "#f9fbfd",
-      }}
-    >
-      {/* 👤 Header con avatar y nombre */}
+    <Card sx={{ width: "100%", margin: "auto", mb: 3, borderRadius: 3, boxShadow: 3, border: "1px solid #1976d2", backgroundColor: "#f9fbfd" }}>
       <CardHeader
         avatar={
           <Avatar
@@ -185,27 +154,14 @@ export default function PostCard({
             sx={{ cursor: "pointer" }}
           />
         }
-        title={
-          <Typography fontWeight="bold" color="primary">
-            {nombre} @{nickname}
-          </Typography>
-        }
+        title={<Typography fontWeight="bold" color="primary">{nombre} @{nickname}</Typography>}
         subheader={fechaFormateada}
       />
 
-      {/* ✍️ Contenido o edición */}
       <CardContent sx={{ pb: 1 }}>
         {modoEdicion ? (
           <>
-            <TextField
-              fullWidth
-              multiline
-              value={contenidoEditado}
-              onChange={(e) => setContenidoEditado(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-
-            {/* Emoji Picker */}
+            <TextField fullWidth multiline value={contenidoEditado} onChange={(e) => setContenidoEditado(e.target.value)} sx={{ mb: 2 }} />
             <Box ref={emojiRef}>
               <Tooltip title="Agregar emoji">
                 <IconButton onClick={() => setMostrarPicker(!mostrarPicker)}>
@@ -215,47 +171,23 @@ export default function PostCard({
             </Box>
             {mostrarPicker && (
               <Box ref={pickerRef}>
-                <Picker
-                  data={data}
-                  onEmojiSelect={(emoji) =>
-                    setContenidoEditado(contenidoEditado + emoji.native)
-                  }
-                  theme="light"
-                />
+                <Picker data={data} onEmojiSelect={(emoji) => setContenidoEditado(contenidoEditado + emoji.native)} theme="light" />
               </Box>
             )}
 
-            {/* 🖼️ Vista previa imagen actual o nueva (si aplica) */}
             <Box sx={{ mt: 2 }}>
               {nuevaImagen ? (
-                <CardMedia
-                  component="img"
-                  image={URL.createObjectURL(nuevaImagen)}
-                  alt="nueva imagen"
-                  sx={{
-                    maxWidth: 200,
-                    maxHeight: 300,
-                    objectFit: "cover",
-                    borderRadius: 2,
-                  }}
-                />
+                <CardMedia component="img" image={URL.createObjectURL(nuevaImagen)} alt="nueva imagen" sx={{ maxWidth: 200, maxHeight: 300, objectFit: "cover", borderRadius: 2 }} />
               ) : (
-                mostrarImagenActual &&
-                imagenUrl && (
+                mostrarImagenActual && imagenUrl && (
                   <CardMedia
                     component="img"
-                    image={imagenUrl}
+                    image={imagenUrl?.startsWith("/uploads/") ? `${import.meta.env.VITE_BACKEND_URL}${imagenUrl}` : imagenUrl}
                     alt="imagen actual"
-                    sx={{
-                      maxWidth: 200,
-                      maxHeight: 300,
-                      objectFit: "cover",
-                      borderRadius: 2,
-                    }}
+                    sx={{ maxWidth: 200, maxHeight: 300, objectFit: "cover", borderRadius: 2 }}
                   />
                 )
               )}
-
               {mostrarImagenActual && imagenUrl && !nuevaImagen && (
                 <IconButton onClick={() => setMostrarImagenActual(false)}>
                   <DeleteForeverIcon color="error" />
@@ -264,18 +196,9 @@ export default function PostCard({
             </Box>
 
             <Box sx={{ mt: 2 }}>
-              <Button
-                variant="outlined"
-                startIcon={<UploadFileIcon />}
-                component="label"
-              >
+              <Button variant="outlined" startIcon={<UploadFileIcon />} component="label">
                 Nueva imagen
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  onChange={(e) => setNuevaImagen(e.target.files[0])}
-                />
+                <input type="file" hidden accept="image/*" onChange={(e) => setNuevaImagen(e.target.files[0])} />
               </Button>
             </Box>
           </>
@@ -285,44 +208,32 @@ export default function PostCard({
             {imagenUrl && (
               <CardMedia
                 component="img"
-                image={imagenUrl}
+                image={imagenUrl?.startsWith("/uploads/") ? `${import.meta.env.VITE_BACKEND_URL}${imagenUrl}` : imagenUrl}
                 alt="imagen del post"
-                sx={{
-                  maxWidth: 200,
-                  maxHeight: 300,
-                  objectFit: "cover",
-                  borderRadius: 2,
-                  mt: 2,
-                }}
+                sx={{ maxWidth: 200, maxHeight: 300, objectFit: "cover", borderRadius: 2, mt: 2 }}
               />
             )}
           </>
         )}
       </CardContent>
 
-      {/* ❤️ Acciones: like, reacción, editar/eliminar */}
       <CardActions disableSpacing sx={{ justifyContent: "space-between" }}>
         <Box>
           <Tooltip title="Me gusta">
             <IconButton onClick={handleLike}>
               <FavoriteIcon color="error" />
-              <Typography variant="body2" ml={0.5}>
-                {likes}
-              </Typography>
+              <Typography variant="body2" ml={0.5}>{likes}</Typography>
             </IconButton>
           </Tooltip>
 
           <Tooltip title="Reaccionar">
             <IconButton onClick={handleReact}>
               <SentimentSatisfiedAltIcon color="primary" />
-              <Typography variant="body2" ml={0.5}>
-                {reacciones}
-              </Typography>
+              <Typography variant="body2" ml={0.5}>{reacciones}</Typography>
             </IconButton>
           </Tooltip>
         </Box>
 
-        {/* 🛠️ Solo si es el dueño del post */}
         {esPropietario && (
           <Box>
             {modoEdicion ? (

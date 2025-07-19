@@ -15,6 +15,8 @@ import { useNavigate } from 'react-router-dom';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 export default function ResetPassword() {
   const navigate = useNavigate();
 
@@ -42,7 +44,7 @@ export default function ResetPassword() {
     setError(null);
 
     try {
-      const res = await fetch(`https://backend-red-social-blah.fly.dev/usuarios/email/${email}`);
+      const res = await fetch(`${BACKEND_URL}/usuarios/email/${email}`);
       if (!res.ok) throw new Error('Correo no encontrado');
       setUsuarioValido(true);
       setMensaje('Correo válido. Ahora puedes ingresar tu nueva contraseña.');
@@ -55,13 +57,12 @@ export default function ResetPassword() {
 
   // Paso 2: Cambiar la contraseña
   const cambiarPassword = async () => {
-    if (error) return; // Evita enviar si hay error previo
+    if (error) return;
 
     setLoading(true);
     setMensaje(null);
     setError(null);
 
-    // Validaciones
     if (newPassword !== confirmPassword) {
       setError('❌ Las contraseñas no coinciden.');
       setLoading(false);
@@ -75,7 +76,7 @@ export default function ResetPassword() {
     }
 
     try {
-      const res = await fetch(`https://backend-red-social-blah.fly.dev/usuarios/reset-password`, {
+      const res = await fetch(`${BACKEND_URL}/usuarios/reset-password`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, newPassword }),
@@ -108,7 +109,6 @@ export default function ResetPassword() {
 
         {!usuarioValido ? (
           <>
-            {/* Paso 1: Verificar correo */}
             <TextField
               label="Correo electrónico"
               fullWidth
@@ -129,7 +129,6 @@ export default function ResetPassword() {
           </>
         ) : (
           <>
-            {/* Paso 2: Nueva contraseña */}
             <TextField
               label="Nueva contraseña"
               type={showPassword ? 'text' : 'password'}
@@ -176,7 +175,6 @@ export default function ResetPassword() {
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Actualizar contraseña'}
             </Button>
 
-            {/* Botón para volver manualmente al login */}
             <Button
               fullWidth
               variant="outlined"

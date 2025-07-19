@@ -11,6 +11,8 @@ import Footer from "./components/Footer";
 import ResetPassword from "./pages/ResetPassword";
 import Configuracion from "./pages/Configuracion";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 function App() {
   // 🔄 Estado para lista de usuarios
   const [listaDeUsuarios, setListaDeUsuarios] = useState([]);
@@ -20,7 +22,7 @@ function App() {
 
   // 🔁 Función reutilizable para cargar usuarios desde el backend
   const cargarUsuarios = () => {
-    fetch("https://backend-red-social-blah.fly.dev/usuarios")
+    fetch(`${BACKEND_URL}/usuarios`)
       .then((res) => res.json())
       .then((data) => {
         const usuariosConFechaFormateada = data.map((usuario) => ({

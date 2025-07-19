@@ -5,42 +5,34 @@ import CrearPost from "../components/CrearPost";
 import PostCard from "../components/PostCard";
 
 export default function Profile() {
-  const { id: idParam } = useParams(); // puede ser undefined si estás en /perfil
+  const { id: idParam } = useParams();
   const usuarioLogueado = JSON.parse(localStorage.getItem("usuario"));
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   const [usuario, setUsuario] = useState(null);
   const [publicaciones, setPublicaciones] = useState([]);
 
-  // 🧠 Determina si estoy viendo mi propio perfil
   const esMiPerfil =
     !idParam || parseInt(idParam) === parseInt(usuarioLogueado?.id);
 
-  // 🔁 Cargar datos reales según a quién estés viendo
   const fetchUsuario = async (id) => {
     try {
-      const response = await fetch(`https://backend-red-social-blah.fly.dev/usuarios/${id}`);
+      const response = await fetch(`${BACKEND_URL}/usuarios/${id}`);
       const data = await response.json();
-      console.log("🔁 Usuario cargado:", data);
       setUsuario(data);
     } catch (error) {
       console.error("❌ Error al cargar usuario:", error);
     }
   };
 
-  // ⏳ Al montar: determina a quién mostrar
   useEffect(() => {
     const idFinal = idParam || usuarioLogueado?.id;
-    if (idFinal) {
-      fetchUsuario(idFinal);
-    }
+    if (idFinal) fetchUsuario(idFinal);
   }, [idParam]);
 
-  // 🔁 Cargar publicaciones de ese usuario
   const fetchPublicaciones = async (userId) => {
     try {
-      const response = await fetch(
-        `https://backend-red-social-blah.fly.dev/publicaciones/usuario/${userId}`
-      );
+      const response = await fetch(`${BACKEND_URL}/publicaciones/usuario/${userId}`);
       const data = await response.json();
       if (Array.isArray(data)) {
         setPublicaciones(data.reverse());
@@ -53,24 +45,17 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    if (usuario?.id) {
-      fetchPublicaciones(usuario.id);
-    }
+    if (usuario?.id) fetchPublicaciones(usuario.id);
   }, [usuario?.id]);
 
   const handleDeletePost = async (postId) => {
-    try {
-      const confirmacion = window.confirm(
-        "¿Estás segura/o de eliminar esta publicación?"
-      );
-      if (!confirmacion) return;
+    const confirmacion = window.confirm("¿Estás segura/o de eliminar esta publicación?");
+    if (!confirmacion) return;
 
-      const response = await fetch(
-        `https://backend-red-social-blah.fly.dev/publicaciones/eliminar/${postId}`,
-        {
-          method: "DELETE",
-        }
-      );
+    try {
+      const response = await fetch(`${BACKEND_URL}/publicaciones/eliminar/${postId}`, {
+        method: "DELETE",
+      });
 
       if (response.ok) {
         fetchPublicaciones(usuario.id);
@@ -108,7 +93,7 @@ export default function Profile() {
   } = usuario;
 
   const avatarCompleto = avatarUrl?.startsWith("/uploads/")
-    ? `https://backend-red-social-blah.fly.dev${avatarUrl}`
+    ? `${BACKEND_URL}${avatarUrl}`
     : avatarUrl;
 
   const fechaFormateada = new Date(fechaRegistro).toLocaleDateString("es-MX", {
@@ -119,26 +104,10 @@ export default function Profile() {
 
   return (
     <Box sx={{ maxWidth: 800, mx: "auto", mt: 6, mb: 8, px: 3 }}>
-      {/* 👤 Info del perfil */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          mb: 4,
-        }}
-      >
-        <Avatar
-          src={avatarCompleto}
-          alt={nombre}
-          sx={{ width: 200, height: 200, mb: 2 }}
-        />
-        <Typography variant="h5" fontWeight="bold">
-          {nombre}
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          @{nickname}
-        </Typography>
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 4 }}>
+        <Avatar src={avatarCompleto} alt={nombre} sx={{ width: 200, height: 200, mb: 2 }} />
+        <Typography variant="h5" fontWeight="bold">{nombre}</Typography>
+        <Typography variant="subtitle1" color="text.secondary">@{nickname}</Typography>
         {descripcion && (
           <Typography variant="body1" sx={{ mt: 2, textAlign: "center" }}>
             {descripcion}
@@ -148,39 +117,27 @@ export default function Profile() {
 
       <Divider sx={{ mb: 4 }} />
 
-      {/* 📊 Estadísticas */}
       <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-        <Grid
-          container
-          spacing={3}
-          sx={{ maxWidth: 600 }}
-          justifyContent="center"
-        >
+        <Grid container spacing={3} sx={{ maxWidth: 600 }} justifyContent="center">
           <Grid item xs={12} sm={4}>
             <Paper sx={{ p: 2, textAlign: "center" }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Publicaciones
-              </Typography>
+              <Typography variant="subtitle2" color="text.secondary">Publicaciones</Typography>
               <Typography variant="h6">{publicaciones.length}</Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={4}>
             <Paper sx={{ p: 2, textAlign: "center" }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Visualizaciones
-              </Typography>
+              <Typography variant="subtitle2" color="text.secondary">Visualizaciones</Typography>
               <Typography variant="h6">
                 {visualizaciones !== undefined && visualizaciones !== null
-                  ? ` ${visualizaciones}`
+                  ? visualizaciones
                   : "❌ Sin datos"}
               </Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={4}>
             <Paper sx={{ p: 2, textAlign: "center" }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Miembro desde
-              </Typography>
+              <Typography variant="subtitle2" color="text.secondary">Miembro desde</Typography>
               <Typography variant="h6">{fechaFormateada}</Typography>
             </Paper>
           </Grid>
@@ -189,19 +146,17 @@ export default function Profile() {
 
       <Divider sx={{ my: 4 }} />
 
-      {/* ✍️ Solo puedo publicar si estoy en MI perfil */}
       {esMiPerfil && (
         <CrearPost usuario={usuario} onPublicarSuccess={() => fetchPublicaciones(usuario.id)} />
       )}
 
-      {/* 🧱 Lista de publicaciones */}
       {publicaciones.map((post) => {
         const avatarPost = post.usuario.avatarUrl?.startsWith("/uploads/")
-          ? `https://backend-red-social-blah.fly.dev${post.usuario.avatarUrl}`
+          ? `${BACKEND_URL}${post.usuario.avatarUrl}`
           : post.usuario.avatarUrl;
 
         const imagenCompleta = post.imagenUrl?.startsWith("/uploads/")
-          ? `https://backend-red-social-blah.fly.dev${post.imagenUrl}`
+          ? `${BACKEND_URL}${post.imagenUrl}`
           : post.imagenUrl;
 
         return (

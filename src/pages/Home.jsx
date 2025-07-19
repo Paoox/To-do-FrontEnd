@@ -6,15 +6,14 @@ import { Box, Typography, Divider } from "@mui/material";
 
 function Home({ usuarios, onActualizar, terminoBusqueda = "" }) {
   const [posts, setPosts] = useState([]);
+  const backend = import.meta.env.VITE_BACKEND_URL;
 
-  // 🔁 Cargar todos los posts del sistema al inicio
   const fetchTodosLosPosts = async () => {
     try {
-      const response = await fetch("https://backend-red-social-blah.fly.dev/publicaciones");
+      const response = await fetch(`${backend}/publicaciones`);
       const data = await response.json();
 
       if (Array.isArray(data)) {
-        // Mezclar aleatoriamente los posts
         const aleatorios = [...data].sort(() => Math.random() - 0.5);
         setPosts(aleatorios);
       } else {
@@ -29,7 +28,6 @@ function Home({ usuarios, onActualizar, terminoBusqueda = "" }) {
     fetchTodosLosPosts();
   }, []);
 
-  // ✅ Cuando un post se actualiza (likes o reacciones)
   const handlePostActualizado = (postActualizado) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) =>
@@ -38,14 +36,12 @@ function Home({ usuarios, onActualizar, terminoBusqueda = "" }) {
     );
   };
 
-  // 🔍 Filtrar posts por contenido (ignorando mayúsculas)
   const postsFiltrados = posts.filter((post) =>
     post.contenido.toLowerCase().includes(terminoBusqueda.toLowerCase())
   );
 
   return (
     <div style={{ padding: "2rem" }}>
-      {/* 🧑‍💻 Tabla de usuarios */}
       <Typography
         variant="h6"
         sx={{
@@ -62,7 +58,6 @@ function Home({ usuarios, onActualizar, terminoBusqueda = "" }) {
 
       <Divider sx={{ my: 4 }} />
 
-      {/* 📰 Sección de posts */}
       <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
         Lo más viral
       </Typography>
@@ -79,11 +74,11 @@ function Home({ usuarios, onActualizar, terminoBusqueda = "" }) {
             const avatarCompleto = post.usuario.avatarUrl?.startsWith(
               "/uploads/"
             )
-              ? `https://backend-red-social-blah.fly.dev${post.usuario.avatarUrl}`
+              ? `${backend}${post.usuario.avatarUrl}`
               : post.usuario.avatarUrl;
 
             const imagenCompleta = post.imagenUrl?.startsWith("/uploads/")
-              ? `https://backend-red-social-blah.fly.dev${post.imagenUrl}`
+              ? `${backend}${post.imagenUrl}`
               : post.imagenUrl;
 
             return (
@@ -103,7 +98,7 @@ function Home({ usuarios, onActualizar, terminoBusqueda = "" }) {
                 onLike={async () => {
                   try {
                     const response = await fetch(
-                      `https://backend-red-social-blah.fly.dev/publicaciones/${post.id}/like`,
+                      `${backend}/publicaciones/${post.id}/like`,
                       { method: "PUT" }
                     );
                     if (response.ok) {
@@ -117,7 +112,7 @@ function Home({ usuarios, onActualizar, terminoBusqueda = "" }) {
                 onReact={async () => {
                   try {
                     const response = await fetch(
-                      `https://backend-red-social-blah.fly.dev/publicaciones/${post.id}/reaccion`,
+                      `${backend}/publicaciones/${post.id}/reaccion`,
                       { method: "PUT" }
                     );
                     if (response.ok) {

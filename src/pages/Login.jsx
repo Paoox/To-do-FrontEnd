@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import * as React from 'react';
 import {
   Container,
@@ -16,25 +17,21 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
+  const backend = import.meta.env.VITE_BACKEND_URL;
 
-  // Mensaje que llega desde el registro exitoso (opcional)
   const successMessage = location.state?.successMessage || null;
-
-  // Estados del formulario
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [errorMessage, setErrorMessage] = React.useState(null);
-  const [showPassword, setShowPassword] = React.useState(false); // 👁️ Mostrar u ocultar la contraseña
+  const [showPassword, setShowPassword] = React.useState(false);
 
-  // Detectar si hay un token de sesión en localStorage
   const isLoggedIn = Boolean(localStorage.getItem('token'));
 
-  // 🔐 Intentar iniciar sesión
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch('https://backend-red-social-blah.fly.dev/usuarios/login', {
+      const res = await fetch(`${backend}/usuarios/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -56,19 +53,14 @@ export default function Login() {
     }
   };
 
-  // 🚪 Cerrar sesión y limpiar datos
   const handleLogout = () => {
-  // 🧹 Limpiar datos del usuario
-  localStorage.removeItem('token');
-  localStorage.removeItem('usuario');
-  setEmail('');
-  setPassword('');
-  setErrorMessage(null);
-
-  // 🔄 Redirigir directamente al login (evita recargar la página completa)
-  navigate('/login');
-};
-
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    setEmail('');
+    setPassword('');
+    setErrorMessage(null);
+    navigate('/login');
+  };
 
   return (
     <Container maxWidth="sm">
@@ -77,7 +69,6 @@ export default function Login() {
           {isLoggedIn ? 'Sesión activa' : 'Iniciar sesión'}
         </Typography>
 
-        {/* ✅ Mostrar mensaje exitoso desde registro */}
         {successMessage && (
           <Box sx={{ mb: 2, p: 2, bgcolor: '#d1e7dd', borderRadius: 1 }}>
             <Typography variant="body2" sx={{ color: '#0f5132' }}>
@@ -86,7 +77,6 @@ export default function Login() {
           </Box>
         )}
 
-        {/* ❌ Mensaje de error al iniciar sesión */}
         {errorMessage && (
           <Box sx={{ mb: 2, p: 2, bgcolor: '#f8d7da', borderRadius: 1 }}>
             <Typography variant="body2" sx={{ color: '#842029' }}>
@@ -95,7 +85,6 @@ export default function Login() {
           </Box>
         )}
 
-        {/* 🔐 Formulario si NO está logueado */}
         {!isLoggedIn ? (
           <form onSubmit={handleLogin}>
             <TextField
@@ -139,7 +128,6 @@ export default function Login() {
             </Button>
           </form>
         ) : (
-          // 🔒 Si ya está logueado, mostrar botón de cerrar sesión
           <Box sx={{ mt: 3 }}>
             <Button
               variant="outlined"
@@ -152,7 +140,6 @@ export default function Login() {
           </Box>
         )}
 
-        {/* 📌 Enlaces solo si NO está logueado */}
         {!isLoggedIn && (
           <>
             <Box sx={{ textAlign: 'center', mt: 2 }}>

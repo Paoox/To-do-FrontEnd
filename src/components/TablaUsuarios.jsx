@@ -1,3 +1,4 @@
+// src/components/TablaUsuarios.jsx
 import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, Avatar } from '@mui/material';
@@ -26,9 +27,9 @@ export default function TablaUsuarios({ usuarios }) {
       width: 100,
       sortable: false,
       renderCell: (params) => {
-        const avatarUrl = params.value?.startsWith('http')
-          ? params.value
-          : `https://backend-red-social-blah.fly.dev${params.value}`;
+        const base = import.meta.env.VITE_BACKEND_URL;
+        const path = params.value?.startsWith('/') ? params.value : `/${params.value}`;
+        const avatarUrl = params.value?.startsWith('http') ? params.value : `${base}${path}`;
 
         return (
           <Avatar

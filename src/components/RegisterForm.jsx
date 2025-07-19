@@ -19,7 +19,6 @@ import { useNavigate } from "react-router-dom";
 export default function RegisterForm() {
   const navigate = useNavigate();
 
-  // 📝 Estado para manejar el formulario y errores
   const [form, setForm] = useState({
     alias: "",
     email: "",
@@ -29,7 +28,6 @@ export default function RegisterForm() {
     numero: "",
   });
 
-  // 🚨 Estado para manejar errores de validación
   const [errors, setErrors] = useState({
     alias: "",
     email: "",
@@ -39,18 +37,14 @@ export default function RegisterForm() {
     numero: "",
   });
 
-  // 👁️ Estado para mostrar/ocultar contraseñas
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // 🔐 Regex para validar la contraseña
   const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
 
   const validate = (field, value) => {
     const newErrors = { ...errors };
-
-    // Validación básica para cada campo
     switch (field) {
       case "alias":
         newErrors.alias = value.trim() === "" ? "Requerido" : "";
@@ -78,28 +72,23 @@ export default function RegisterForm() {
       default:
         break;
     }
-
     setErrors(newErrors);
   };
 
-  // Maneja el cambio de cada campo y valida
   const handleChange = (field) => (e) => {
     const value = e.target.value;
     setForm({ ...form, [field]: value });
     validate(field, value);
   };
 
-  // Verifica si el formulario es válido
   const isFormValid =
     Object.values(errors).every((e) => e === "") &&
     Object.values(form).every((v) => v !== "");
 
-    // Maneja el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Si el formulario no es válido, no hacemos nada
     const usuario = {
       nombre: form.nombre,
       nickname: form.alias.toLowerCase(),
@@ -111,22 +100,16 @@ export default function RegisterForm() {
       avatarUrl: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70) + 1}`,
     };
 
-    //Creamos el usuario en el backend
     try {
-      const res = await fetch("https://backend-red-social-blah.fly.dev/usuarios", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/usuarios`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(usuario),
       });
 
-      // Si el backend responde con un error de conflicto (409), manejamos el error
       if (res.status === 409) {
         const data = await res.text();
-        console.log("🚨 Error del backend:", data);
-
         const nuevosErrores = { ...errors };
-
-        // Dependiendo del error, actualizamos el estado de errores
         if (data.includes("email")) {
           nuevosErrores.email = "Este correo ya está registrado";
         } else if (data.includes("nickname")) {
@@ -134,7 +117,6 @@ export default function RegisterForm() {
         } else {
           nuevosErrores.email = "Ya existe un usuario con estos datos";
         }
-
         setErrors(nuevosErrores);
         setForm({ ...form });
         return;
@@ -142,7 +124,6 @@ export default function RegisterForm() {
 
       if (!res.ok) throw new Error("Error al registrar usuario");
 
-      // Si todo sale bien, redirigimos al login
       const data = await res.json();
       navigate("/login", {
         state: {

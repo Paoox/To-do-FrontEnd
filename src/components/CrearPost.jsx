@@ -1,4 +1,3 @@
-// src/components/CrearPost.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Avatar,
@@ -21,6 +20,11 @@ export default function CrearPost({ usuario, onPublicarSuccess }) {
 
   const pickerRef = useRef(null);
   const imagenPreview = imagen ? URL.createObjectURL(imagen) : null;
+
+  // ✅ URL segura del avatar
+  const avatarUrlCompleto = usuario?.avatarUrl
+    ? `${import.meta.env.VITE_BACKEND_URL}${usuario.avatarUrl.startsWith("/") ? usuario.avatarUrl : `/${usuario.avatarUrl}`}`
+    : null;
 
   // 🔒 Cierra el emoji picker si se hace clic fuera
   useEffect(() => {
@@ -61,7 +65,7 @@ export default function CrearPost({ usuario, onPublicarSuccess }) {
     if (imagen) formData.append('imagen', imagen);
 
     try {
-      const response = await fetch('https://backend-red-social-blah.fly.dev/publicaciones/crear', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/publicaciones/crear`, {
         method: 'POST',
         body: formData
       });
@@ -99,11 +103,7 @@ export default function CrearPost({ usuario, onPublicarSuccess }) {
         <Avatar
           alt={usuario.nombre}
           sx={{ width: 80, height: 80 }}
-          src={
-            usuario.avatarUrl?.startsWith('/uploads/')
-              ? `https://backend-red-social-blah.fly.dev${usuario.avatarUrl}`
-              : usuario.avatarUrl
-          }
+          src={avatarUrlCompleto}
         />
 
         <Box sx={{ flex: 1 }}>
@@ -160,7 +160,7 @@ export default function CrearPost({ usuario, onPublicarSuccess }) {
                 }}
               />
 
-              {/* 🗑️ Botón para eliminar imagen */}
+              {/* 🗑️ Botón para eliminar imagen seleccionada */}
               <Box mt={1}>
                 <Tooltip title="Eliminar imagen seleccionada">
                   <IconButton color="error" onClick={() => setImagen(null)}>
