@@ -74,7 +74,7 @@ export default function PostCard({
   }, []);
 
   const avatarCompleto = avatarUrl?.startsWith("/uploads/")
-    ? `http://localhost:8080${avatarUrl}`
+    ? `https://backend-red-social-blah.fly.dev${avatarUrl}`
     : avatarUrl;
 
   const fechaFormateada = new Date(fecha).toLocaleDateString("es-MX", {
@@ -87,7 +87,7 @@ export default function PostCard({
   const handleLike = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/publicaciones/${id}/like`,
+        `https://backend-red-social-blah.fly.dev/publicaciones/${id}/like`,
         {
           method: "PUT",
         }
@@ -107,7 +107,7 @@ export default function PostCard({
   const handleReact = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/publicaciones/${id}/reaccion`,
+        `https://backend-red-social-blah.fly.dev/publicaciones/${id}/reaccion`,
         {
           method: "PUT",
         }
@@ -136,7 +136,7 @@ export default function PostCard({
       formData.append("eliminarImagen", (!mostrarImagenActual).toString());
 
       const response = await fetch(
-        `http://localhost:8080/publicaciones/${id}`,
+        `https://backend-red-social-blah.fly.dev/publicaciones/${id}`,
         {
           method: "PUT",
           body: formData,

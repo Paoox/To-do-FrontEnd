@@ -113,7 +113,7 @@ export default function RegisterForm() {
 
     //Creamos el usuario en el backend
     try {
-      const res = await fetch("http://localhost:8080/usuarios", {
+      const res = await fetch("https://backend-red-social-blah.fly.dev/usuarios", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(usuario),

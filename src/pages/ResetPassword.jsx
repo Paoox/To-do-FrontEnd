@@ -42,7 +42,7 @@ export default function ResetPassword() {
     setError(null);
 
     try {
-      const res = await fetch(`http://localhost:8080/usuarios/email/${email}`);
+      const res = await fetch(`https://backend-red-social-blah.fly.dev/usuarios/email/${email}`);
       if (!res.ok) throw new Error('Correo no encontrado');
       setUsuarioValido(true);
       setMensaje('Correo válido. Ahora puedes ingresar tu nueva contraseña.');
@@ -75,7 +75,7 @@ export default function ResetPassword() {
     }
 
     try {
-      const res = await fetch(`http://localhost:8080/usuarios/reset-password`, {
+      const res = await fetch(`https://backend-red-social-blah.fly.dev/usuarios/reset-password`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, newPassword }),

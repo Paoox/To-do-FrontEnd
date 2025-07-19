@@ -215,7 +215,7 @@ export default function Navbar({ setTerminoBusqueda }) {
                 alt={usuario.nombre}
                 src={
                   usuario.avatarUrl.startsWith('/uploads/')
-                    ? `http://localhost:8080${usuario.avatarUrl}`
+                    ? `https://backend-red-social-blah.fly.dev${usuario.avatarUrl}`
                     : usuario.avatarUrl
                 }
               />

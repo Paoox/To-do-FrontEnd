@@ -18,7 +18,7 @@ export default function Profile() {
   // 🔁 Cargar datos reales según a quién estés viendo
   const fetchUsuario = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/usuarios/${id}`);
+      const response = await fetch(`https://backend-red-social-blah.fly.dev/usuarios/${id}`);
       const data = await response.json();
       console.log("🔁 Usuario cargado:", data);
       setUsuario(data);
@@ -39,7 +39,7 @@ export default function Profile() {
   const fetchPublicaciones = async (userId) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/publicaciones/usuario/${userId}`
+        `https://backend-red-social-blah.fly.dev/publicaciones/usuario/${userId}`
       );
       const data = await response.json();
       if (Array.isArray(data)) {
@@ -66,7 +66,7 @@ export default function Profile() {
       if (!confirmacion) return;
 
       const response = await fetch(
-        `http://localhost:8080/publicaciones/eliminar/${postId}`,
+        `https://backend-red-social-blah.fly.dev/publicaciones/eliminar/${postId}`,
         {
           method: "DELETE",
         }
@@ -108,7 +108,7 @@ export default function Profile() {
   } = usuario;
 
   const avatarCompleto = avatarUrl?.startsWith("/uploads/")
-    ? `http://localhost:8080${avatarUrl}`
+    ? `https://backend-red-social-blah.fly.dev${avatarUrl}`
     : avatarUrl;
 
   const fechaFormateada = new Date(fechaRegistro).toLocaleDateString("es-MX", {
@@ -197,11 +197,11 @@ export default function Profile() {
       {/* 🧱 Lista de publicaciones */}
       {publicaciones.map((post) => {
         const avatarPost = post.usuario.avatarUrl?.startsWith("/uploads/")
-          ? `http://localhost:8080${post.usuario.avatarUrl}`
+          ? `https://backend-red-social-blah.fly.dev${post.usuario.avatarUrl}`
           : post.usuario.avatarUrl;
 
         const imagenCompleta = post.imagenUrl?.startsWith("/uploads/")
-          ? `http://localhost:8080${post.imagenUrl}`
+          ? `https://backend-red-social-blah.fly.dev${post.imagenUrl}`
           : post.imagenUrl;
 
         return (

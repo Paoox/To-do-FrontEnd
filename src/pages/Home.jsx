@@ -10,7 +10,7 @@ function Home({ usuarios, onActualizar, terminoBusqueda = "" }) {
   // 🔁 Cargar todos los posts del sistema al inicio
   const fetchTodosLosPosts = async () => {
     try {
-      const response = await fetch("http://localhost:8080/publicaciones");
+      const response = await fetch("https://backend-red-social-blah.fly.dev/publicaciones");
       const data = await response.json();
 
       if (Array.isArray(data)) {
@@ -79,11 +79,11 @@ function Home({ usuarios, onActualizar, terminoBusqueda = "" }) {
             const avatarCompleto = post.usuario.avatarUrl?.startsWith(
               "/uploads/"
             )
-              ? `http://localhost:8080${post.usuario.avatarUrl}`
+              ? `https://backend-red-social-blah.fly.dev${post.usuario.avatarUrl}`
               : post.usuario.avatarUrl;
 
             const imagenCompleta = post.imagenUrl?.startsWith("/uploads/")
-              ? `http://localhost:8080${post.imagenUrl}`
+              ? `https://backend-red-social-blah.fly.dev${post.imagenUrl}`
               : post.imagenUrl;
 
             return (
@@ -103,7 +103,7 @@ function Home({ usuarios, onActualizar, terminoBusqueda = "" }) {
                 onLike={async () => {
                   try {
                     const response = await fetch(
-                      `http://localhost:8080/publicaciones/${post.id}/like`,
+                      `https://backend-red-social-blah.fly.dev/publicaciones/${post.id}/like`,
                       { method: "PUT" }
                     );
                     if (response.ok) {
@@ -117,7 +117,7 @@ function Home({ usuarios, onActualizar, terminoBusqueda = "" }) {
                 onReact={async () => {
                   try {
                     const response = await fetch(
-                      `http://localhost:8080/publicaciones/${post.id}/reaccion`,
+                      `https://backend-red-social-blah.fly.dev/publicaciones/${post.id}/reaccion`,
                       { method: "PUT" }
                     );
                     if (response.ok) {

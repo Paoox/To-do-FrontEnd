@@ -85,7 +85,7 @@ export default function Configuracion({ onActualizar }) {
         formData.append("archivo", usuario.avatar);
 
         const resAvatar = await fetch(
-          `http://localhost:8080/usuarios/${usuarioStorage.id}/avatar`,
+          `https://backend-red-social-blah.fly.dev/usuarios/${usuarioStorage.id}/avatar`,
           {
             method: "POST",
             body: formData,
@@ -109,7 +109,7 @@ export default function Configuracion({ onActualizar }) {
       };
 
       const resUser = await fetch(
-        `http://localhost:8080/usuarios/${usuarioStorage.id}`,
+        `https://backend-red-social-blah.fly.dev/usuarios/${usuarioStorage.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -146,7 +146,7 @@ export default function Configuracion({ onActualizar }) {
     if (!confirmar) return;
 
     try {
-      await fetch(`http://localhost:8080/usuarios/${usuarioStorage.id}`, {
+      await fetch(`https://backend-red-social-blah.fly.dev/usuarios/${usuarioStorage.id}`, {
         method: "DELETE",
       });
 
@@ -202,7 +202,7 @@ export default function Configuracion({ onActualizar }) {
             <img
               src={
                 usuario.avatarUrl.startsWith("/uploads/")
-                  ? `http://localhost:8080${usuario.avatarUrl}`
+                  ? `https://backend-red-social-blah.fly.dev${usuario.avatarUrl}`
                   : usuario.avatarUrl
               }
               alt="Avatar actual"

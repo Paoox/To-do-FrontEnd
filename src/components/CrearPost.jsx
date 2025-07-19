@@ -61,7 +61,7 @@ export default function CrearPost({ usuario, onPublicarSuccess }) {
     if (imagen) formData.append('imagen', imagen);
 
     try {
-      const response = await fetch('http://localhost:8080/publicaciones/crear', {
+      const response = await fetch('https://backend-red-social-blah.fly.dev/publicaciones/crear', {
         method: 'POST',
         body: formData
       });
@@ -101,7 +101,7 @@ export default function CrearPost({ usuario, onPublicarSuccess }) {
           sx={{ width: 80, height: 80 }}
           src={
             usuario.avatarUrl?.startsWith('/uploads/')
-              ? `http://localhost:8080${usuario.avatarUrl}`
+              ? `https://backend-red-social-blah.fly.dev${usuario.avatarUrl}`
               : usuario.avatarUrl
           }
         />

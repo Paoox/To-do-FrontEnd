@@ -20,7 +20,7 @@ function App() {
 
   // 🔁 Función reutilizable para cargar usuarios desde el backend
   const cargarUsuarios = () => {
-    fetch("http://localhost:8080/usuarios")
+    fetch("https://backend-red-social-blah.fly.dev/usuarios")
       .then((res) => res.json())
       .then((data) => {
         const usuariosConFechaFormateada = data.map((usuario) => ({

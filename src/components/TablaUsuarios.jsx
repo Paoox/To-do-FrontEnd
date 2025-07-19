@@ -28,7 +28,7 @@ export default function TablaUsuarios({ usuarios }) {
       renderCell: (params) => {
         const avatarUrl = params.value?.startsWith('http')
           ? params.value
-          : `http://localhost:8080${params.value}`;
+          : `https://backend-red-social-blah.fly.dev${params.value}`;
 
         return (
           <Avatar
