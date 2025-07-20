@@ -68,7 +68,7 @@ function App() {
             <Route path="/perfil" element={<Profile />} />
             <Route path="/perfil/:id" element={<Profile />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/register" element={<Register onActualizar={cargarUsuarios} />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route
               path="/configuracion"
