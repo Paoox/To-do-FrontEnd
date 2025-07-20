@@ -1,5 +1,5 @@
 // src/pages/Login.jsx
-import * as React from 'react';
+import * as React from "react";
 import {
   Container,
   TextField,
@@ -9,77 +9,82 @@ import {
   Link as MuiLink,
   InputAdornment,
   IconButton,
-} from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+} from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-export default function Login() {
+export default function Login({ onActualizar }) {
+  useEffect(() => {
+    onActualizar && onActualizar(); // 🔄 Forzar actualización
+  }, []);
+
   const navigate = useNavigate();
   const location = useLocation();
   const backend = import.meta.env.VITE_BACKEND_URL;
 
   const successMessage = location.state?.successMessage || null;
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState(null);
   const [showPassword, setShowPassword] = React.useState(false);
 
-  const isLoggedIn = Boolean(localStorage.getItem('token'));
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    onActualizar && onActualizar();
 
     try {
       const res = await fetch(`${backend}/usuarios/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) {
         const errorText = await res.text();
-        throw new Error(errorText || 'Error en el login');
+        throw new Error(errorText || "Error en el login");
       }
 
       const data = await res.json();
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('usuario', JSON.stringify(data.usuario));
-      window.dispatchEvent(new Event('storage'));
-      navigate('/perfil');
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("usuario", JSON.stringify(data.usuario));
+      window.dispatchEvent(new Event("storage"));
+      navigate("/perfil");
     } catch (err) {
-      console.error('❌ Error al iniciar sesión:', err);
+      console.error("❌ Error al iniciar sesión:", err);
       setErrorMessage(err.message);
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
-    setEmail('');
-    setPassword('');
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    setEmail("");
+    setPassword("");
     setErrorMessage(null);
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
     <Container maxWidth="sm">
       <Box sx={{ mt: 8, mb: 4 }}>
         <Typography variant="h5" align="center" gutterBottom>
-          {isLoggedIn ? 'Sesión activa' : 'Iniciar sesión'}
+          {isLoggedIn ? "Sesión activa" : "Iniciar sesión"}
         </Typography>
 
         {successMessage && (
-          <Box sx={{ mb: 2, p: 2, bgcolor: '#d1e7dd', borderRadius: 1 }}>
-            <Typography variant="body2" sx={{ color: '#0f5132' }}>
+          <Box sx={{ mb: 2, p: 2, bgcolor: "#d1e7dd", borderRadius: 1 }}>
+            <Typography variant="body2" sx={{ color: "#0f5132" }}>
               {successMessage}
             </Typography>
           </Box>
         )}
 
         {errorMessage && (
-          <Box sx={{ mb: 2, p: 2, bgcolor: '#f8d7da', borderRadius: 1 }}>
-            <Typography variant="body2" sx={{ color: '#842029' }}>
+          <Box sx={{ mb: 2, p: 2, bgcolor: "#f8d7da", borderRadius: 1 }}>
+            <Typography variant="body2" sx={{ color: "#842029" }}>
               {errorMessage}
             </Typography>
           </Box>
@@ -99,7 +104,7 @@ export default function Login() {
             <TextField
               label="Contraseña"
               fullWidth
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               margin="normal"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -118,12 +123,7 @@ export default function Login() {
               }}
             />
 
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 2 }}
-            >
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
               Iniciar sesión
             </Button>
           </form>
@@ -142,26 +142,26 @@ export default function Login() {
 
         {!isLoggedIn && (
           <>
-            <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Box sx={{ textAlign: "center", mt: 2 }}>
               <Typography variant="body2">
-                ¿No tienes cuenta?{' '}
+                ¿No tienes cuenta?{" "}
                 <MuiLink
                   component="button"
-                  onClick={() => navigate('/register')}
+                  onClick={() => navigate("/register")}
                   underline="hover"
-                  sx={{ fontWeight: 'bold' }}
+                  sx={{ fontWeight: "bold" }}
                 >
                   Crear cuenta
                 </MuiLink>
               </Typography>
             </Box>
 
-            <Box sx={{ textAlign: 'center', mt: 1 }}>
+            <Box sx={{ textAlign: "center", mt: 1 }}>
               <MuiLink
                 component="button"
-                onClick={() => navigate('/reset-password')}
+                onClick={() => navigate("/reset-password")}
                 underline="hover"
-                sx={{ fontSize: '0.875rem', fontStyle: 'italic' }}
+                sx={{ fontSize: "0.875rem", fontStyle: "italic" }}
               >
                 ¿Olvidaste tu contraseña?
               </MuiLink>
